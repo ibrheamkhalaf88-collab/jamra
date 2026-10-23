@@ -58,7 +58,7 @@ export async function verifyAdminPassword(password: string) {
   const stored = env.JAMRA_ADMIN_PASSWORD_HASH ?? "";
   const [scheme, iterationsText, saltText, expectedText] = stored.split("$");
   const iterations = Number(iterationsText);
-  if (scheme !== "pbkdf2-sha256" || !Number.isInteger(iterations) || iterations < 100000 || !saltText || !expectedText) return false;
+  if (scheme !== "pbkdf2-sha256" || !Number.isInteger(iterations) || iterations < 100000 || iterations > 100000 || !saltText || !expectedText) return false;
   const key = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveBits"]);
   const actual = new Uint8Array(await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: decodeBase64Url(saltText), iterations }, key, 256));
   const expected = decodeBase64Url(expectedText);

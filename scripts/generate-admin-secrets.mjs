@@ -8,7 +8,7 @@ try {
   if (password.length < 12 || password !== confirmation) {
     throw new Error("كلمة المرور يجب أن تكون 12 حرفًا على الأقل وأن تتطابق في المرتين.");
   }
-  const iterations = 310000;
+  const iterations = 100000;
   const salt = randomBytes(16);
   const hash = pbkdf2Sync(password, salt, iterations, 32, "sha256");
   const sessionSecret = randomBytes(48).toString("base64url");
