@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1792704364390,
+      "tag": "0000_concerned_senator_kelly",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1792740659873,
+      "tag": "0001_greedy_black_cat",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792743852930,
+      "tag": "0002_overjoyed_obadiah_stane",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+/* Named presenters stay beside the desktop scene and in the mobile reading flow. */
+.slide .content{left:37%;right:4%}
+.slide .speaker-zone{display:block!important;left:0;bottom:8%;width:36%;height:85%;opacity:1;border:0;z-index:7}
+.speaker-cutout{position:absolute;inset:0 0 38px;width:100%;height:calc(100% - 38px);object-fit:contain;object-position:center bottom}
+.slide .speaker-caption{bottom:0;left:8%;right:8%;padding:7px 5px;font-size:clamp(11px,1.2vw,17px);line-height:1.4}
+.slide .speaker-caption span{display:block;font-size:10px;margin-top:3px}
+.speaker-pointer{position:absolute;right:-19%;top:39%;width:57%;height:22%;overflow:visible;fill:none;stroke:#ffbd24;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 2px #073d70)}
+.slide.active .speaker-pointer{animation:presenterPoint 2.7s ease-in-out infinite}
+.slide .speaker-silhouette{left:25%;bottom:40px;width:50%;height:82%;opacity:1}
+.slide .faceless .avatar-head{border-radius:50% 50% 23% 23%}
+@keyframes presenterPoint{0%,100%{transform:translate(0,0)}50%{transform:translate(5px,-1px)}}
+@media(max-width:700px) and (orientation:portrait){
+ .slide .content{left:auto;right:auto}
+ .slide .speaker-zone{position:relative;left:auto;right:auto;bottom:auto;width:min(92vw,440px);height:min(78svh,640px);margin:0 auto 22px;flex:none}
+ .speaker-cutout{bottom:45px;height:calc(100% - 45px)}
+ .speaker-pointer{right:1%;top:0;width:110px;height:110px;transform:rotate(-75deg)}
+ .slide.active .speaker-pointer{animation:mobilePresenterPoint 2.7s ease-in-out infinite}
+ .slide .speaker-caption{font-size:14px;left:0;right:0}
+ .slide .speaker-silhouette{height:calc(100% - 70px);bottom:45px}
+}
+@keyframes mobilePresenterPoint{0%,100%{transform:rotate(-75deg) translate(0,0)}50%{transform:rotate(-75deg) translate(4px,-5px)}}
+@media(max-height:500px) and (orientation:landscape){.slide .speaker-zone{height:82%;bottom:9%;width:34%}.slide .speaker-caption{font-size:11px}.slide .speaker-caption span{font-size:8px}}
+@media(prefers-reduced-motion:reduce){.slide.active .speaker-pointer,.slide .speaker-silhouette,.slide .avatar-arm{animation:none!important}}

@@ -1,0 +1,9 @@
+.meteor-title{position:relative;isolation:isolate;perspective:900px}.meteor-line{white-space:nowrap}.meteor-word{position:relative;display:inline-block;transform-origin:50% 85%;vertical-align:baseline;opacity:1}
+.meteor-live-trail{position:absolute;pointer-events:none;z-index:-1;bottom:52%;left:48%;width:6px;height:270px;display:block;border-radius:100%;transform-origin:bottom center;background:linear-gradient(to top,#fff8d8,#ffae49 18%,#ff5a2955 52%,transparent)}
+.meteor-live-spark{position:absolute;pointer-events:none;bottom:15%;left:50%;display:block;width:4px;height:4px;border-radius:50%;background:#ffc989}
+.meteor-replay{display:block;width:fit-content;margin:0 0 18px;padding:9px 15px;background:#ff5a2912;border:1px solid #ff986366;border-radius:20px;color:#efb48e;font:12px Tahoma,Arial;cursor:pointer}.meteor-replay:hover{border-color:#ff8b4a;color:#fff}.meteor-replay:focus-visible{outline:2px solid #ff8b4a;outline-offset:4px}
+@media(max-width:800px){.meteor-title{letter-spacing:-2px}.meteor-live-trail{height:210px}}
+
+.meteor-fire-tongue{position:absolute;pointer-events:none;z-index:-1;display:block;bottom:20%;width:.17em;min-width:7px;border-radius:80% 20% 60% 40% / 90% 30% 70% 20%;background:linear-gradient(to top,#fff6b5 0%,#ffd24c 25%,#ff8a21 57%,#ff4217 82%,transparent 100%);transform-origin:50% 100%;opacity:0;filter:blur(.45px)}
+
+.meteor-title .impact-glow{color:#ff402e;text-shadow:0 0 7px #ff382b99,0 0 20px #ee231c66,0 0 38px #c9181433}

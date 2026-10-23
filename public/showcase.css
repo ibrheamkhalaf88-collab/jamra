@@ -1,0 +1,55 @@
+.work-showcase{padding:86px 7%;background:#211d18;border-block:1px solid var(--line);scroll-margin-top:28px}
+.showcase-head{display:flex;justify-content:space-between;align-items:end;gap:30px}
+.showcase-head .section-title{font-size:clamp(36px,4.3vw,60px)}
+.showcase-head>p{margin:0 0 8px;color:var(--muted);font-size:13px;line-height:2}
+.showcase-filters{display:flex;gap:9px;flex-wrap:wrap;margin:32px 0 24px}
+.showcase-filter{padding:10px 17px;border:1px solid #ffffff26;border-radius:40px;color:#e4d9ca;background:transparent;font:500 11px 'Noto Sans Arabic',Tahoma;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+.showcase-filter:hover,.showcase-filter:focus-visible{border-color:#f36b39;outline:none}
+.showcase-filter.is-active{background:#f36b39;border-color:#f36b39;color:#21150d}
+.showcase-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.showcase-group{margin-top:58px}
+.showcase-group[hidden]{display:none}
+.showcase-group-head{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:22px}
+.showcase-group-head h3{font:500 clamp(29px,3.6vw,43px)/1.35 Changa,Tahoma;color:#f5eee2;margin:7px 0 0}
+.showcase-group-head p{margin:0;color:#b9ad9e;font-size:11px;line-height:2;max-width:430px}
+.showcase-clip .showcase-media{aspect-ratio:16/10}
+.showcase-card{min-width:0;border:1px solid #ffffff1c;background:#28231e;overflow:hidden;transition:transform .25s,border-color .25s}
+.showcase-card:hover{transform:translateY(-4px);border-color:#f36b396e}
+.showcase-card[hidden]{display:none!important}
+.showcase-media{position:relative;aspect-ratio:9/12;background:#111;overflow:hidden}
+.showcase-media video{width:100%;height:100%;object-fit:contain;display:block}
+.showcase-media-label{position:absolute;top:12px;right:12px;padding:6px 11px;border-radius:30px;background:#171310d9;border:1px solid #ffffff2a;color:#fff1dc;font-size:9px;pointer-events:none}
+.showcase-card-copy{padding:20px 21px 22px}
+.showcase-type{font:9px monospace;letter-spacing:.7px;color:#f39060;text-transform:uppercase}
+.showcase-card-copy h3{font:500 22px/1.5 Changa,Tahoma;margin:7px 0 8px;color:#f5eee2}
+.showcase-card-copy p{font-size:11px;line-height:2;color:#b9ad9e;margin:0}
+.site-preview{display:block;position:relative;aspect-ratio:16/10;background:linear-gradient(135deg,#332921,#14110e);overflow:hidden}
+.site-preview img{width:100%;height:100%;display:block;object-fit:cover;object-position:top center;transition:transform .6s;color:#d2c5b2;font-size:11px}
+.storehub-preview{background:#090909}.storehub-preview img{object-fit:contain}
+.showcase-site:hover .site-preview img{transform:scale(1.035)}
+.preview-open{position:absolute;inset:auto 12px 12px auto;padding:8px 12px;border-radius:30px;background:#15120edb;border:1px solid #ffffff30;color:#fff4e8;font-size:9px;opacity:0;transform:translateY(5px);transition:opacity .2s,transform .2s}
+.site-preview:hover .preview-open,.site-preview:focus-visible .preview-open{opacity:1;transform:none}
+.showcase-design{background:#27221c}
+.showcase-poster{height:auto;aspect-ratio:16/10;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:28px 34px;background:radial-gradient(ellipse at 75% 10%,#ffb35b 0,#f36b39 43%,#9f331b 100%);color:#291b12}
+.showcase-poster:after{content:'';position:absolute;inset:9px;border:1px solid #fff4d86b;pointer-events:none}
+.poster-stamp,.poster-eyebrow,.poster-foot,.showcase-poster strong,.showcase-poster p{position:relative;z-index:1}
+.poster-stamp{font-size:9px;letter-spacing:.6px}
+.poster-orbit{position:absolute;width:280px;height:280px;border:1px solid #ffe8bd75;border-radius:50%;left:-52px;top:20px;box-shadow:0 0 0 28px #ffe5b829,0 0 0 60px #ffe5b816}
+.poster-eyebrow{font-size:10px;margin-top:13px}
+.showcase-poster strong{font:700 clamp(48px,6vw,82px)/1.05 Changa,Tahoma;letter-spacing:-3px;margin-top:4px}
+.showcase-poster strong span{font-size:.7em;margin-right:5px}
+.showcase-poster p{font:500 16px/1.6 Changa,Tahoma;margin:2px 0 0}
+.poster-foot{font-size:8px;margin-top:15px;color:#492719}
+.showcase-open{display:flex;justify-content:space-between;align-items:center;margin-top:17px;padding-top:12px;border-top:1px solid #ffffff20;font-size:10px;color:#f39a6b}
+.showcase-note{font-size:10px;line-height:1.8;color:#8f8273;margin:18px 0 0}
+.showcase-filter:focus-visible,.site-preview:focus-visible,.showcase-open:focus-visible{outline:2px solid #f36b39;outline-offset:3px}
+@media(max-width:900px){.showcase-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.showcase-head{align-items:start}}
+@media(max-width:700px){.work-showcase{padding:60px 7%}.showcase-head{display:block}.showcase-head>p{margin-top:16px}.showcase-filters{gap:7px;margin:25px 0 18px}.showcase-filter{padding:9px 13px;font-size:10px}.showcase-group{margin-top:42px}.showcase-group-head{display:block;margin-bottom:16px}.showcase-group-head p{margin-top:10px}.showcase-grid{grid-template-columns:1fr;gap:14px}.showcase-card-copy{padding:17px}.showcase-card-copy h3{font-size:20px}.showcase-media{aspect-ratio:4/5}.showcase-poster{aspect-ratio:16/10;padding:24px 28px}.showcase-poster strong{font-size:64px}}
+@media(prefers-reduced-motion:reduce){.showcase-card,.site-preview img,.preview-open,.showcase-filter{transition:none}.showcase-card:hover{transform:none}}
+.design-collage{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;aspect-ratio:16/10;padding:14px;background:linear-gradient(135deg,#f3ede2,#ded4c5);overflow:hidden}
+.design-collage img{min-width:0;width:100%;height:100%;object-fit:contain;background:#fff;border:1px solid #261b1220;box-shadow:0 8px 22px #37281920}
+.design-collage img:nth-child(1){transform:translateY(-2px) rotate(-2deg)}
+.design-collage img:nth-child(2){transform:translateY(5px) rotate(1.5deg)}
+.design-collage img:nth-child(3){transform:translateY(-1px) rotate(-1deg)}
+.design-collage>span{position:absolute;inset:auto 22px 20px auto;background:#241d17e8;color:#fff3e3;padding:7px 11px;border-radius:20px;font-size:8px}
+@media(max-width:700px){.design-collage{padding:11px;gap:6px}.design-collage>span{inset:auto 16px 16px auto}}

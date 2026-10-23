@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#171513">
+  <title>دخول فريق جَمْرَة</title>
+  <link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/admin-login.css">
+</head>
+<body class="admin-login-page">
+  <main class="admin-login-card">
+    <a class="brand" href="/index.html">جَمْرَة<i>،</i></a>
+    <span class="section-kicker">مساحة الفريق</span>
+    <h1>أهلًا بعودتك.</h1>
+    <p>أدخل كلمة المرور المخصصة لفريق جَمْرَة لفتح لوحة المشاريع والطلبات.</p>
+    <form id="loginForm">
+      <label for="adminPassword">كلمة المرور</label>
+      <input id="adminPassword" name="password" type="password" autocomplete="current-password" required autofocus>
+      <button class="admin-button primary" type="submit">دخول آمن <span aria-hidden="true">←</span></button>
+      <div id="loginFeedback" role="status" aria-live="polite"></div>
+    </form>
+    <a class="back-link" href="/index.html">العودة للموقع ↙</a>
+  </main>
+  <script src="/admin-login.js" defer></script>
+</body>
+</html>

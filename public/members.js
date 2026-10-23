@@ -1,0 +1,29 @@
+(()=>{
+ 'use strict';
+ const people=[
+ {id:'ibrahim',name:'إبراهيم خلف',title:'أنا إبراهيم خلف 😎',image:'assets/guide/welcome.webp',kind:'cutout',text:'بجَمْرَة بنشتغل كلنا كفريق واحد ونتقاسم المهام حسب كل مشروع. وأحب الأفكار اللي بتتحرك… وإذا شفت زر هون، غالبًا مرّ من تحت إيدي 😄',tasks:[]},
+ {id:'ahmad',name:'أحمد المصري',title:'أنا أحمد المصري 👋',image:'assets/guide/ahmad.webp',kind:'cutout',text:'إحنا فريق واحد، بنتشارك الأفكار والتنفيذ، وبنتوزع المهام حسب احتياج كل مشروع. وإذا الحماس أخذنا بعيد، برجعنا للخطة بهدوء 😄',tasks:[]},
+ {id:'mohammad',name:'محمد ملاحي',title:'أنا محمد ملاحي 👋',image:'assets/mohammad-cutout.webp',kind:'portrait',text:'أنا محمد ملاحي، واحد من فريق جَمْرَة. بنشتغل سوا وبنتقاسم المهام بيننا حسب كل فكرة ومشروع.',tasks:[]},
+ {id:'tariq',name:'طارق السلاق',title:'طارق السلاق 😄',quip:'شكله بسكوتاية بس ممكن يعوّرك! صاحب كل الأفكار المتخلّفة، وأكبر مخاوفه يجي ع الموعد بدري 😉',image:'assets/ibrahim-tariq-shoulder.webp',kind:'cutout',text:'أنا طارق، واحد من فريق جَمْرَة. بنشتغل كلنا سوا وبنتقاسم المهام حسب كل مشروع، وبعيدًا عن المزح بحب الشغل يمشي بسلاسة.',tasks:[]}
+ ];;
+ const cards=[...document.querySelectorAll('[data-profile]')];if(!cards.length)return;
+ const modal=document.createElement('dialog');modal.id='memberDialog';modal.className='member-stage';modal.setAttribute('aria-labelledby','memberTitle');modal.setAttribute('aria-describedby','memberBio');
+ modal.innerHTML='<button class="member-stage-close" type="button" aria-label="إغلاق تعريف العضو">×</button><div class="member-stage-layout"><div class="member-stage-character" aria-hidden="true"></div><div class="member-stage-story"><span class="member-stage-label">تعرّف علينا / جَمْرَة</span><div aria-live="polite" aria-atomic="true"><h2 id="memberTitle"></h2><p class="member-stage-quip" hidden></p><p class="member-stage-role"></p><p id="memberBio"></p></div><ul class="member-stage-tasks"></ul><div class="member-stage-nav"><button class="member-prev" type="button">السابق →</button><span class="member-stage-count"></span><button class="member-next" type="button">التالي ←</button></div></div></div>';
+ document.body.append(modal);
+ let index=0,opener=null,closing=false,closeTimer,switchTimer;
+ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const title=modal.querySelector('#memberTitle'),role=modal.querySelector('.member-stage-role'),bio=modal.querySelector('#memberBio'),visual=modal.querySelector('.member-stage-character'),tasks=modal.querySelector('.member-stage-tasks'),count=modal.querySelector('.member-stage-count');
+ function paint(){const person=people[index];title.textContent=person.title;const quip=modal.querySelector('.member-stage-quip');quip.textContent=person.quip||'';quip.hidden=!person.quip;role.textContent=person.role||'';role.hidden=!person.role;bio.textContent=person.text;count.textContent=(index+1)+' / '+people.length;tasks.replaceChildren();tasks.hidden=!(person.tasks&&person.tasks.length);for(const text of (person.tasks||[])){const li=document.createElement('li');li.textContent=text;tasks.append(li)}visual.replaceChildren();visual.className='member-stage-character '+person.kind;
+  if(person.image){const img=document.createElement('img');img.src=person.image;img.alt='';img.decoding='async';visual.append(img)}else{const initials=document.createElement('div');initials.className='member-stage-initials';initials.textContent=person.initials;visual.append(initials);const hint=document.createElement('span');hint.className='member-stage-photo-note';hint.textContent='الصورة الشخصية تُضاف قريبًا';visual.append(hint)}
+ }
+ function open(id,trigger){const nextIndex=people.findIndex(p=>p.id===id);if(nextIndex<0)return;index=nextIndex;opener=trigger||document.activeElement;closing=false;clearTimeout(closeTimer);clearTimeout(switchTimer);modal.classList.remove('closing','switching');paint();if(!modal.open)modal.showModal();document.body.classList.add('member-view-open');modal.querySelector('.member-stage-close').focus({preventScroll:true})}
+ function close(){if(!modal.open||closing)return;closing=true;clearTimeout(switchTimer);modal.classList.add('closing');closeTimer=setTimeout(()=>modal.close(),reduce?0:170)}
+ function change(delta){if(closing)return;clearTimeout(switchTimer);modal.classList.add('switching');switchTimer=setTimeout(()=>{index=(index+delta+people.length)%people.length;paint();modal.classList.remove('switching')},reduce?0:140)}
+ document.addEventListener('click',e=>{const trigger=e.target.closest('[data-member]')||e.target.closest('[data-profile]');if(!trigger||modal.contains(trigger))return;open(trigger.dataset.member||trigger.dataset.profile,trigger.closest('[data-profile]')?.querySelector('.member-open')||trigger)});
+ modal.querySelector('.member-stage-close').addEventListener('click',close);modal.querySelector('.member-prev').addEventListener('click',()=>change(-1));modal.querySelector('.member-next').addEventListener('click',()=>change(1));
+ modal.addEventListener('cancel',e=>{e.preventDefault();close()});modal.addEventListener('click',e=>{if(e.target!==modal)return;const r=modal.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)close()});
+ modal.addEventListener('close',()=>{clearTimeout(closeTimer);clearTimeout(switchTimer);closing=false;document.body.classList.remove('member-view-open');modal.classList.remove('closing','switching');if(opener?.isConnected)opener.focus({preventScroll:true})});
+ modal.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'){e.preventDefault();change(1)}else if(e.key==='ArrowRight'){e.preventDefault();change(-1)}});
+ // A small controller makes this interaction independently testable.
+ window.JamraMembers={open,close,next:()=>change(1),previous:()=>change(-1),get current(){return people[index].id}};
+})();
