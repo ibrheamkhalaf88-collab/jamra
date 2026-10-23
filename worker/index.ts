@@ -40,25 +40,10 @@ const worker = {
       else if (path.endsWith(".webm")) finalContentType = "video/webm";
     }
     if (finalContentType && finalContentType !== contentType) {
+      const body = await response.arrayBuffer();
       const newHeaders = new Headers(response.headers);
       newHeaders.set("content-type", finalContentType);
-      return new Response(response.body, { status: response.status, statusText: response.statusText, headers: newHeaders });
-    }
-    // Add charset to existing text responses that lack it
-    if (contentType.startsWith("text/html") && !contentType.includes("charset")) {
-      const newHeaders = new Headers(response.headers);
-      newHeaders.set("content-type", "text/html; charset=utf-8");
-      return new Response(response.body, { status: response.status, statusText: response.statusText, headers: newHeaders });
-    }
-    if (contentType.startsWith("text/css") && !contentType.includes("charset")) {
-      const newHeaders = new Headers(response.headers);
-      newHeaders.set("content-type", "text/css; charset=utf-8");
-      return new Response(response.body, { status: response.status, statusText: response.statusText, headers: newHeaders });
-    }
-    if (contentType.startsWith("text/javascript") && !contentType.includes("charset")) {
-      const newHeaders = new Headers(response.headers);
-      newHeaders.set("content-type", "text/javascript; charset=utf-8");
-      return new Response(response.body, { status: response.status, statusText: response.statusText, headers: newHeaders });
+      return new Response(body, { status: response.status, statusText: response.statusText, headers: newHeaders });
     }
     return response;
   },
