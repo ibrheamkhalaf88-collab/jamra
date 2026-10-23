@@ -3,10 +3,8 @@ import { runWithConnectorBinding } from "../lib/connector-context";
 import type { ConnectorBinding } from "../lib/connector-contract.mjs";
 
 const worker = {
-  fetch(request: Request, env: Cloudflare.Env, ctx: ExecutionContext<{ CONNECTORS?: ConnectorBinding }>) {
+  async fetch(request: Request, env: Cloudflare.Env, ctx: ExecutionContext<{ CONNECTORS?: ConnectorBinding }>) {
     let binding = ctx.props?.CONNECTORS;
-    // Local preview emulates the same request-scoped capability. This branch and
-    // the auxiliary service binding are absent from production builds.
     if (import.meta.env.DEV && !binding && env.CONNECTORS) {
       const preview = env.CONNECTORS;
       const expiresAt = Date.now() + 60_000;
@@ -23,7 +21,25 @@ const worker = {
         },
       };
     }
-    return runWithConnectorBinding(binding, () => handler.fetch(request, env, ctx));
+    const response = await runWithConnectorBinding(binding, () => handler.fetch(request, env, ctx));
+    // Ensure UTF-8 charset for HTML/text responses (fixes Arabic mojibake in some clients)
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.startsWith("text/html") && !contentType.includes("charset")) {
+      const newHeaders = new Headers(response.headers);
+      newHeaders.set("content-type", "text/html; charset=utf-8");
+      return new Response(response.body, { status: response.status, statusText: response.statusText, headers: newHeaders });
+    }
+    if (contentType.startsWith("text/css") && !contentType.includes("charset")) {
+      const newHeaders = new Headers(response.headers);
+      newHeaders.set("content-type", "text/css; charset=utf-8");
+      return new Response(response.body, { status: response.status, statusText: response.statusText, headers: newHeaders });
+    }
+    if (contentType.startsWith("text/javascript") && !contentType.includes("charset")) {
+      const newHeaders = new Headers(response.headers);
+      newHeaders.set("content-type", "text/javascript; charset=utf-8");
+      return new Response(response.body, { status: response.status, statusText: response.statusText, headers: newHeaders });
+    }
+    return response;
   },
 };
 
