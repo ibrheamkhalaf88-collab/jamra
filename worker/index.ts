@@ -23,13 +23,17 @@ const worker = {
         },
       };
     }
-    const response = runWithConnectorBinding(binding, () => handler.fetch(request, env, ctx));
-    // Add charset=utf-8 to text responses lacking it (fixes Arabic mojibake)
+    const response = await runWithConnectorBinding(binding, () => handler.fetch(request, env, ctx));
+    // Ensure text responses declare UTF-8 (fixes Arabic mojibake in strict clients)
     const ct = response.headers.get("content-type") || "";
     if (ct.startsWith("text/") && !ct.includes("charset")) {
-      const h = new Headers(response.headers);
-      h.set("content-type", ct.split(";")[0].trim() + "; charset=utf-8");
-      return new Response(response.body, { status: response.status, statusText: response.statusText, headers: h });
+      try {
+        const h = new Headers(response.headers);
+        h.set("content-type", `${ct.split(";")[0].trim()}; charset=utf-8`);
+        return new Response(response.body, { status: response.status, statusText: response.statusText, headers: h });
+      } catch {
+        return response;
+      }
     }
     return response;
   },

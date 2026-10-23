@@ -1,8 +1,32 @@
 /
   Content-Type: text/html; charset=utf-8
+/services
+  Content-Type: text/html; charset=utf-8
+/project
+  Content-Type: text/html; charset=utf-8
+/team
+  Content-Type: text/html; charset=utf-8
+/contact
+  Content-Type: text/html; charset=utf-8
+/ideas
+  Content-Type: text/html; charset=utf-8
+/start
+  Content-Type: text/html; charset=utf-8
+/story
+  Content-Type: text/html; charset=utf-8
+/taqat
+  Content-Type: text/html; charset=utf-8
+/taqat-presentation
+  Content-Type: text/html; charset=utf-8
+/admin
+  Content-Type: text/html; charset=utf-8
+/admin-login
+  Content-Type: text/html; charset=utf-8
 /*.html
   Content-Type: text/html; charset=utf-8
 /*.css
   Content-Type: text/css; charset=utf-8
 /*.js
   Content-Type: text/javascript; charset=utf-8
+/*.json
+  Content-Type: application/json; charset=utf-8
