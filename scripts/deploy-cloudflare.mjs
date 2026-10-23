@@ -28,6 +28,7 @@ if (!d1 || !r2) throw new Error("Built Worker config is missing DB or BUCKET bin
 d1.database_id = databaseId;
 d1.database_name = databaseName;
 r2.bucket_name = bucketName;
+if (config.assets) config.assets.run_worker_first = true;
 await writeFile(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf8");
 
 const wrangler = resolve(root, "node_modules/wrangler/bin/wrangler.js");
