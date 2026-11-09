@@ -1,0 +1,266 @@
+/* Women Advocacy Page Styles */
+
+.women-advocacy-page{
+  --wa-orange:#f47743;
+  --wa-orange-light:#ff8b5e;
+  --wa-cream:#f1e8da;
+  --wa-muted:#b9aa98;
+  --wa-bg:#171513;
+  --wa-card:#211d19;
+  --wa-line:#ffffff20;
+  --wa-red:#d8422c;
+  --wa-green:#61c797;
+}
+
+/* HERO */
+.wa-hero{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:48px;
+  align-items:center;
+  min-height:70vh;
+  padding:clamp(60px,10vh,120px) clamp(24px,5vw,80px);
+  position:relative;
+  isolation:isolate;
+}
+.wa-hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse at 30% 20%,#5c281526,transparent 50%),
+    radial-gradient(ellipse at 80% 80%,#1a3a2a26,transparent 40%);
+  z-index:-1;
+}
+.wa-hero .section-kicker{margin-bottom:16px}
+.wa-hero h1{
+  font:700 clamp(36px,6vw,72px)/1.2 Changa,Tahoma;
+  margin:0 0 20px;
+  letter-spacing:-0.02em;
+}
+.wa-hero h1 em{font-style:italic;color:var(--wa-orange)}
+.wa-hero-lead{
+  font-size:clamp(16px,2.5vw,22px);
+  line-height:1.8;
+  color:var(--wa-muted);
+  max-width:520px;
+  margin:0 0 32px;
+}
+.wa-hero-actions{display:flex;flex-wrap:wrap;gap:16px}
+.wa-hero-actions .primary,
+.wa-hero-actions .quiet{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 28px;border-radius:6px;
+  font:600 14px Tahoma;text-decoration:none;transition:.2s;
+}
+.wa-hero-actions .primary{
+  background:var(--wa-orange);border:2px solid var(--wa-orange);color:#27150f;
+}
+.wa-hero-actions .primary:hover{background:var(--wa-orange-light);border-color:var(--wa-orange-light)}
+.wa-hero-actions .quiet{
+  background:transparent;border:2px solid var(--wa-line);color:var(--wa-cream);
+}
+.wa-hero-actions .quiet:hover{border-color:var(--wa-orange);color:var(--wa-orange)}
+
+/* HERO VISUAL */
+.wa-hero-visual{display:grid;place-items:center;position:relative}
+.wa-hero-ring{
+  position:absolute;
+  width:100%;height:100%;max-width:480px;max-height:480px;
+  border:1px solid var(--wa-orange-light);
+  border-radius:50%;
+  opacity:0.3;
+  animation:wa-pulse 4s ease-in-out infinite;
+}
+@keyframes wa-pulse{
+  0%,100%{transform:scale(1);opacity:0.3}
+  50%{transform:scale(1.05);opacity:0.5}
+}
+.wa-hero-icon{position:relative;z-index:1}
+.wa-hero-chips{
+  position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:12px;
+  background:var(--wa-card);border:1px solid var(--wa-line);
+  padding:12px 24px;border-radius:50px;white-space:nowrap;
+  font-size:13px;color:var(--wa-cream);
+}
+.wa-hero-chips i{color:var(--wa-orange);font-style:normal}
+
+/* FACTS */
+.wa-facts{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:24px;padding:40px clamp(24px,5vw,80px);
+  background:linear-gradient(180deg,transparent,var(--wa-bg));
+  border-top:1px solid var(--wa-line);border-bottom:1px solid var(--wa-line);
+}
+.wa-facts div{display:grid;gap:8px;text-align:center}
+.wa-facts span{font:600 11px/1.8 Tahoma;letter-spacing:1.2px;color:var(--wa-orange);text-transform:uppercase}
+.wa-facts strong{font:700 clamp(22px,4vw,36px)/1.2 Changa,Tahoma;color:var(--wa-cream)}
+
+/* CONTENTS NAV */
+.wa-contents{
+  display:flex;flex-wrap:wrap;gap:12px;justify-content:center;
+  padding:32px clamp(24px,5vw,80px);
+  border-bottom:1px solid var(--wa-line);
+}
+.wa-contents a{
+  padding:10px 20px;background:var(--wa-card);border:1px solid var(--wa-line);
+  border-radius:50px;color:var(--wa-cream);font:13px Tahoma;
+  text-decoration:none;transition:.2s;white-space:nowrap;
+}
+.wa-contents a:hover{border-color:var(--wa-orange);color:var(--wa-orange);transform:translateY(-2px)}
+
+/* SECTION BASE */
+.wa-section{padding:clamp(60px,10vh,100px) clamp(24px,5vw,80px)}
+.wa-section .section-kicker{margin-bottom:16px}
+.wa-section h2{
+  font:700 clamp(30px,5vw,54px)/1.3 Changa,Tahoma;
+  margin:0 0 12px;letter-spacing:-0.01em;
+}
+.wa-section h2 em{font-style:italic;color:var(--wa-orange)}
+.wa-lead{
+  font-size:clamp(16px,2.2vw,20px);
+  line-height:1.9;color:var(--wa-muted);
+  max-width:640px;margin:0 0 24px;
+}
+.wa-two-col{
+  display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;
+}
+
+/* STORY */
+.wa-story blockquote{
+  margin:32px 0;padding:24px 32px;
+  background:var(--wa-card);border-inline-start:4px solid var(--wa-orange);
+  border-radius:0 8px 8px 0;font-style:italic;color:var(--wa-cream);
+  font-size:clamp(16px,2.5vw,22px);line-height:1.8;
+}
+
+/* CHALLENGES */
+.wa-challenges-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:32px;
+}
+.wa-challenges-grid article{
+  padding:28px;background:var(--wa-card);border:1px solid var(--wa-line);
+  border-radius:12px;transition:.3s;position:relative;overflow:hidden;
+}
+.wa-challenges-grid article:hover{transform:translateY(-4px);border-color:var(--wa-orange);box-shadow:0 16px 40px #0006}
+.wa-challenge-num{
+  display:inline-block;width:36px;height:36px;grid:place-items:center;
+  background:var(--wa-orange);color:#27150f;font:700 14px Changa;
+  border-radius:8px;margin-bottom:16px;
+}
+.wa-challenges-grid h3{font:700 18px/1.4 Changa;margin:0 0 10px;color:var(--wa-cream)}
+.wa-challenges-grid p{margin:0;color:var(--wa-muted);font-size:14px;line-height:1.7}
+
+/* GOALS */
+.wa-goals{background:radial-gradient(ellipse at 50% 0%,#5c28151a,transparent 60%),var(--wa-bg)}
+.wa-goals .section-head{display:flex;justify-content:space-between;align-items:start;gap:32px;margin-bottom:40px}
+.wa-goals .section-head>div{max-width:580px}
+.wa-goals .section-head p{color:var(--wa-muted);font-size:15px;line-height:1.8}
+.wa-goals-list{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:24px;list-style:none;padding:0;margin:0;
+}
+.wa-goals-list li{
+  display:flex;gap:18px;padding:28px;
+  background:var(--wa-card);border:1px solid var(--wa-line);border-radius:12px;
+  transition:.3s;
+}
+.wa-goals-list li:hover{border-color:var(--wa-orange);transform:translateX(-4px)}
+.wa-goal-icon{
+  flex:none;width:56px;height:56px;display:grid;place-items:center;
+  background:var(--wa-orange);color:#27150f;border-radius:12px;
+}
+.wa-goal-icon svg{width:28px;height:28px}
+.wa-goals-list h3{font:700 18px/1.4 Changa;margin:0 0 8px;color:var(--wa-cream)}
+.wa-goals-list p{margin:0;color:var(--wa-muted);font-size:14px;line-height:1.7}
+
+/* ACTIONS */
+.wa-actions-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px;
+}
+.wa-actions-grid article{
+  padding:32px 28px;background:var(--wa-card);border:1px solid var(--wa-line);
+  border-radius:12px;text-align:center;transition:.3s;
+}
+.wa-actions-grid article:hover{border-color:var(--wa-orange);transform:translateY(-4px);box-shadow:0 16px 40px #0006}
+.wa-action-icon{
+  width:72px;height:72px;margin:0 auto 20px;display:grid;place-items:center;
+  background:linear-gradient(145deg,#f477431a,transparent);
+  border:1px solid var(--wa-orange);border-radius:16px;color:var(--wa-orange);
+}
+.wa-actions-grid h3{font:700 18px/1.4 Changa;margin:0 0 12px;color:var(--wa-cream)}
+.wa-actions-grid p{margin:0;color:var(--wa-muted);font-size:14px;line-height:1.7}
+
+/* IMPACT */
+.wa-impact{background:radial-gradient(ellipse at 50% 100%,#1a3a2a1a,transparent 50%),var(--wa-bg)}
+.wa-impact-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;list-style:none;padding:0;margin:24px 0 0;
+}
+.wa-impact-stats li{
+  padding:24px;background:var(--wa-card);border:1px solid var(--wa-line);
+  border-radius:12px;text-align:center;transition:.3s;
+}
+.wa-impact-stats li:hover{border-color:var(--wa-green);transform:scale(1.02)}
+.wa-impact-stats strong{
+  display:block;font:700 clamp(36px,6vw,56px)/1 Changa,Tahoma;color:var(--wa-green);margin-bottom:8px;
+}
+.wa-impact-stats span{color:var(--wa-muted);font-size:14px;line-height:1.6}
+
+/* PARTNERS */
+.wa-partners-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:32px;
+}
+.wa-partners-grid article{
+  padding:28px;background:var(--wa-card);border:1px solid var(--wa-line);
+  border-radius:12px;text-align:center;transition:.3s;
+}
+.wa-partners-grid article:hover{border-color:var(--wa-orange);transform:translateY(-4px)}
+.wa-partners-grid span{display:block;font:600 13px/1.6 Changa;color:var(--wa-orange);margin-bottom:8px}
+.wa-partners-grid p{margin:0;color:var(--wa-muted);font-size:14px;line-height:1.7}
+.wa-partners-note{text-align:center;color:var(--wa-muted);font-size:14px;margin-top:24px}
+.wa-partners-note a{color:var(--wa-orange);text-decoration:underline}
+
+/* JOIN */
+.wa-join{background:radial-gradient(ellipse at 50% 50%,#5c28151a,transparent 60%),var(--wa-bg)}
+.wa-join-options{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:40px;
+}
+.wa-join-options article{
+  padding:36px;background:var(--wa-card);border:1px solid var(--wa-line);
+  border-radius:12px;transition:.3s;
+}
+.wa-join-options article:hover{border-color:var(--wa-orange);transform:translateY(-4px)}
+.wa-join-options h3{font:700 20px/1.4 Changa;margin:0 0 12px;color:var(--wa-cream)}
+.wa-join-options p{margin:0 0 20px;color:var(--wa-muted);font-size:15px;line-height:1.8}
+.wa-join-options .quiet{font:600 13px Tahoma;color:var(--wa-orange);text-decoration:underline}
+
+/* CLOSING */
+.wa-closing{
+  text-align:center;padding:80px clamp(24px,5vw,80px);
+  background:radial-gradient(ellipse at 50% 50%,#5c281526,transparent 50%),var(--wa-bg);
+  border-top:1px solid var(--wa-line);
+}
+.wa-closing .section-kicker{margin-bottom:16px}
+.wa-closing h2{
+  font:700 clamp(36px,6vw,64px)/1.3 Changa,Tahoma;margin:0 0 16px;
+}
+.wa-closing h2 em{font-style:italic;color:var(--wa-orange)}
+.wa-closing p{font-size:clamp(18px,3vw,22px);color:var(--wa-muted);max-width:600px;margin:0 auto 32px;line-height:1.8}
+
+/* RESPONSIVE */
+@media(max-width:980px){
+  .wa-hero{grid-template-columns:1fr;text-align:center;min-height:auto;padding-top:80px;padding-bottom:40px}
+  .wa-hero-visual{order:-1}
+  .wa-hero-chips{position:static;transform:none;margin-top:24px;justify-content:center}
+  .wa-two-col{grid-template-columns:1fr;gap:32px}
+  .wa-challenges-grid,.wa-partners-grid,.wa-impact-stats{grid-template-columns:repeat(2,1fr)}
+  .wa-goals-list,.wa-actions-grid{grid-template-columns:1fr}
+  .wa-join-options{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .wa-facts{grid-template-columns:1fr;gap:16px;padding:24px 16px}
+  .wa-challenges-grid,.wa-partners-grid,.wa-impact-stats{grid-template-columns:1fr}
+  .wa-section{padding:48px 16px}
+  .wa-hero{padding:48px 16px}
+  .wa-goals-list li{flex-direction:column;text-align:center;align-items:center}
+  .wa-goal-icon{margin:0 auto 16px}
+}

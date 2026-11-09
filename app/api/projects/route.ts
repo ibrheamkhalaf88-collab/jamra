@@ -3,9 +3,9 @@ import { getDb } from "../../../db";
 import { projects } from "../../../db/schema";
 
 export async function GET() {
-  const rows = await getDb().select().from(projects).where(eq(projects.published, 1)).orderBy(asc(projects.createdAt));
-  return Response.json({ projects: rows.map(({ coverKey, galleryJson, featuresJson, ...project }) => ({
-    ...project,
+  const rows = await getDb().select().from(projects).where(eq(projects.published, 1)).orderBy(asc(projects.sortOrder), asc(projects.createdAt));
+  return Response.json({ projects: rows.map(({ coverKey, galleryJson, featuresJson, sortOrder, ...project }) => ({
+    ...project, sortOrder,
     coverUrl: coverKey ? `/api/media?key=${encodeURIComponent(coverKey)}` : "",
     features: parseStringList(featuresJson),
     gallery: parseGallery(galleryJson),

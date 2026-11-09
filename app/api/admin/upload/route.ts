@@ -5,7 +5,7 @@ const allowedTypes: Record<string, string> = {
   "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/gif": "gif",
   "video/mp4": "mp4", "video/webm": "webm",
 };
-const maxBytes = 25 * 1024 * 1024;
+const maxBytes = 100 * 1024 * 1024; // 100MB - Cloudflare Workers max request body
 
 export async function POST(request: Request) {
   const auth = await requireAdmin(request);
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
   if (!(file instanceof File)) return jsonError("اختر صورة أو فيديو أولًا.");
   const extension = allowedTypes[file.type];
   if (!extension) return jsonError("الأنواع المدعومة: JPG وPNG وWebP وGIF وMP4 وWebM.");
-  if (file.size < 1 || file.size > maxBytes) return jsonError("حجم الملف لازم يكون أقل من 25 ميغابايت.");
+  if (file.size < 1 || file.size > maxBytes) return jsonError(`حجم الملف لازم يكون أقل من ${maxBytes / 1024 / 1024} ميغابايت.`);
   const key = `portfolio/${crypto.randomUUID()}.${extension}`;
   await env.BUCKET.put(key, await file.arrayBuffer(), { httpMetadata: { contentType: file.type } });
   return Response.json({ key, url: `/api/media?key=${encodeURIComponent(key)}`, type: file.type }, { status: 201 });

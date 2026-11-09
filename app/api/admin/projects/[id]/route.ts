@@ -1,4 +1,5 @@
 import { eq } from "drizzle-orm";
+import { env } from "cloudflare:workers";
 import { getDb } from "../../../../../db";
 import { projects } from "../../../../../db/schema";
 import { cleanText, jsonError, requireAdmin, safeHttpUrl } from "../../../../api/_helpers";
@@ -40,6 +41,25 @@ export async function DELETE(request: Request, { params }: Context) {
   const { id } = await params;
   const [project] = await getDb().select().from(projects).where(eq(projects.id, id)).limit(1);
   if (!project) return jsonError("المشروع غير موجود.", 404);
-  await getDb().update(projects).set({ published: 0, updatedAt: new Date().toISOString() }).where(eq(projects.id, id));
+
+  // Delete files from R2
+  if (env.BUCKET) {
+    const keysToDelete: string[] = [];
+    if (project.coverKey) keysToDelete.push(project.coverKey);
+    try {
+      const gallery = JSON.parse(project.galleryJson || "[]");
+      if (Array.isArray(gallery)) {
+        for (const item of gallery) {
+          if (item.key) keysToDelete.push(item.key);
+        }
+      }
+    } catch {}
+    if (keysToDelete.length > 0) {
+      await env.BUCKET.delete(keysToDelete);
+    }
+  }
+
+  // Hard delete from database
+  await getDb().delete(projects).where(eq(projects.id, id));
   return Response.json({ ok: true });
 }

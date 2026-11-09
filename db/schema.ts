@@ -12,6 +12,7 @@ export const projects = sqliteTable("jamra_projects", {
   galleryJson: text("gallery_json").notNull().default("[]"),
   featuresJson: text("features_json").notNull().default("[]"),
   published: integer("published").notNull().default(1),
+  sortOrder: integer("sort_order").notNull().default(0),
   createdAt: text("created_at").notNull().default(""),
   updatedAt: text("updated_at").notNull().default(""),
 });

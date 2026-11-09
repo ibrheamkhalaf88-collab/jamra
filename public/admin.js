@@ -68,8 +68,32 @@
     target.innerHTML = items.length ? items.map((p) => {
       const media = p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.title)}" loading="lazy">` : p.videoUrl ? `<video src="${esc(p.videoUrl)}" muted playsinline preload="metadata"></video>` : `<span>${esc((p.title || "ج").trim().slice(0, 1))}</span>`;
       const url = p.projectUrl || p.videoUrl || "/services.html#work-showcase";
-      return `<article class="catalog-card"><a class="catalog-media" href="${esc(url)}" target="_blank" rel="noopener">${media}</a><div class="catalog-copy"><span>${esc(({website:"موقع أو تطبيق",video:"فيديو وموشن",design:"تصميم وهوية",campaign:"حملة تسويقية"})[p.category] || "من أعمالنا")}</span><h3>${esc(p.title)}</h3><p>${esc(p.summary)}</p><a href="${esc(url)}" target="_blank" rel="noopener">مشاهدة العمل ↗</a></div></article>`;
+      return `<article class="catalog-card"><a class="catalog-media" href="${esc(url)}" target="_blank" rel="noopener">${media}</a><div class="catalog-copy"><span>${esc(({website:"موقع أو تطبيق",video:"فيديو وموشن",design:"تصميم وهوية",campaign:"حملة تسويقية"})[p.category] || "من أعمالنا")}</span><h3>${esc(p.title)}</h3><p>${esc(p.summary)}</p><a href="${esc(url)}" target="_blank" rel="noopener">مشاهدة العمل ↗</a></div><div class="catalog-actions"><button type="button" class="admin-button primary import-btn" data-import='${esc(JSON.stringify(p))}'>⬆ استيراد للإدارة</button></div></article>`;
     }).join("") : '<div class="admin-empty">كل أعمال الموقع موجودة في قائمة مشاريع الإدارة.</div>';
+  }
+
+  async function importCatalogProject(catalogItem) {
+    try {
+      notify("جاري استيراد المشروع...");
+      const payload = {
+        title: catalogItem.title,
+        category: catalogItem.category,
+        summary: catalogItem.summary,
+        description: catalogItem.summary, // Use summary as description for now
+        projectUrl: catalogItem.projectUrl,
+        videoUrl: catalogItem.videoUrl,
+        published: true
+      };
+      const response = await api("/api/admin/projects", { method: "POST", body: JSON.stringify(payload) });
+      if (response.id) {
+        // If there's an imageUrl, we'd need to download and upload it to R2
+        // For now, just notify and refresh
+        notify(`تم استيراد "${catalogItem.title}" بنجاح! تقدر تعدل عليه وتضيف غلاف من التبويب "المشاريع".`);
+        await loadProjects(true);
+      }
+    } catch (error) {
+      notify(error.message);
+    }
   }
   function renderProjects() {
     const target = $("#projectList");
@@ -81,8 +105,10 @@
     target.innerHTML = filtered.map((p) => {
       let storedVideo = false; try { const url = new URL(p.videoUrl, location.origin); storedVideo = /\.(mp4|webm)$/i.test(url.searchParams.get("key") || url.pathname); } catch {}
       const preview = p.coverUrl ? `<img src="${esc(p.coverUrl)}" alt="" loading="lazy">` : (storedVideo ? `<video src="${esc(p.videoUrl)}" muted playsinline></video>` : '<div class="admin-empty">بدون صورة غلاف</div>');
-      return `<article class="project-card">${preview}<div class="project-card-copy"><h3>${esc(p.title)}</h3><p>${esc(p.summary || p.description || "")}</p><div class="project-card-meta"><span>${esc(({website:"موقع",app:"تطبيق / نظام",video:"فيديو وموشن",design:"تصميم وهوية",campaign:"حملة"})[p.category] || "مشروع")}</span><span>${(p.gallery || []).length} صور داخلية</span></div><div class="project-card-actions"><span class="status-pill">${p.published ? "ظاهر للزوار" : "مخفي"}</span><span class="project-actions"><a href="/project.html?project=${encodeURIComponent(p.id)}" target="_blank" rel="noopener">معاينة ↗</a><button type="button" data-edit="${esc(p.id)}">تعديل</button><button type="button" data-toggle="${esc(p.id)}">${p.published ? "إخفاء" : "إظهار"}</button></span></div></div></article>`;
+      return `<article class="project-card" data-id="${esc(p.id)}" draggable="true"><span class="drag-handle" title="اسحب للترتيب">⋮⋮</span>${preview}<div class="project-card-copy"><h3>${esc(p.title)}</h3><p>${esc(p.summary || p.description || "")}</p><div class="project-card-meta"><span>${esc(({website:"موقع",app:"تطبيق / نظام",video:"فيديو وموشن",design:"تصميم وهوية",campaign:"حملة"})[p.category] || "مشروع")}</span><span>${(p.gallery || []).length} صور داخلية</span></div><div class="project-card-actions"><span class="status-pill">${p.published ? " ظاهر للزوار" : " مخفي"}</span><div class="kebab-menu"><button type="button" class="kebab-trigger" aria-label="خيارات المشروع" aria-expanded="false">⋮</button><div class="kebab-dropdown" hidden><a class="kebab-item" href="/project.html?project=${encodeURIComponent(p.id)}" target="_blank" rel="noopener">معاينة ↗</a><button class="kebab-item" type="button" data-edit="${esc(p.id)}">تعديل</button><button class="kebab-item" type="button" data-toggle="${esc(p.id)}">${p.published ? "إخفاء" : "إظهار"}</button><hr class="kebab-divider"><button class="kebab-item kebab-danger" type="button" data-delete="${esc(p.id)}">🗑 حذف نهائي</button></div></div></div></div></article>`;
     }).join("");
+    // Enable drag-and-drop reordering
+    enableProjectDragAndDrop();
   }
 
   async function loadLeads(silent = false) {
@@ -195,7 +221,107 @@
     if (edit) { const p = projects.find((item) => item.id === edit.dataset.edit); if (!p) return; resetProject(); form.hidden = false; form.elements.id.value = p.id; form.elements.title.value = p.title; form.elements.category.value = p.category; form.elements.summary.value = p.summary; form.elements.description.value = p.description; form.elements.features.value = (p.features || []).join("\n"); form.elements.projectUrl.value = p.projectUrl; form.elements.videoUrl.value = p.videoUrl; form.elements.coverKey.value = p.coverKey; form.elements.published.checked = Boolean(p.published); galleryAssets = (p.gallery || []).map((item) => ({ key: item.key, url: item.url, alt: item.alt })); drawGallery(); $("#formTitle").textContent = "تعديل المشروع"; if (p.coverUrl) { preview.hidden = false; preview.innerHTML = `<img src="${esc(p.coverUrl)}" alt="غلاف المشروع"><span>الغلاف الحالي</span>`; } form.scrollIntoView({ behavior: "smooth", block: "start" }); }
     const toggle = event.target.closest("[data-toggle]");
     if (toggle) { const p = projects.find((item) => item.id === toggle.dataset.toggle); if (!p) return; try { await api(`/api/admin/projects/${encodeURIComponent(p.id)}`, { method: "PATCH", body: JSON.stringify({ published: !p.published }) }); await loadProjects(true); notify(p.published ? "أُخفي المشروع من الموقع مع الاحتفاظ به." : "صار المشروع ظاهرًا للزوار."); } catch (error) { notify(error.message); } }
+    const del = event.target.closest("[data-delete]");
+    if (del) {
+      const id = del.dataset.delete;
+      const project = projects.find((p) => p.id === id);
+      if (!project) return;
+      if (!confirm(`حذف "${project.title}" نهائياً؟\nهذا الإجراء لا يمكن التراجع عنه وسيُحذف المشروع وصوره من التخزين.`)) return;
+      try {
+        await api(`/api/admin/projects/${encodeURIComponent(id)}`, { method: "DELETE" });
+        await loadProjects(true);
+        notify("تم حذف المشروع نهائياً.");
+      } catch (error) { notify(error.message); }
+    }
   });
+
+  // Kebab menu toggle
+  document.addEventListener("click", (event) => {
+    const trigger = event.target.closest(".kebab-trigger");
+    const dropdown = event.target.closest(".kebab-dropdown");
+    if (trigger) {
+      event.stopPropagation();
+      const menu = trigger.nextElementSibling;
+      const expanded = trigger.getAttribute("aria-expanded") === "true";
+      document.querySelectorAll(".kebab-dropdown").forEach((d) => d.hidden = true);
+      document.querySelectorAll(".kebab-trigger").forEach((t) => t.setAttribute("aria-expanded", "false"));
+      if (!expanded) {
+        menu.hidden = false;
+        trigger.setAttribute("aria-expanded", "true");
+      }
+    } else if (!dropdown) {
+      document.querySelectorAll(".kebab-dropdown").forEach((d) => d.hidden = true);
+      document.querySelectorAll(".kebab-trigger").forEach((t) => t.setAttribute("aria-expanded", "false"));
+    }
+  });
+
+  // Import catalog project
+  $("#portfolioCatalog").addEventListener("click", (event) => {
+    const btn = event.target.closest(".import-btn");
+    if (btn) {
+      const catalogItem = JSON.parse(btn.dataset.import);
+      importCatalogProject(catalogItem);
+    }
+  });
+
+  function enableProjectDragAndDrop() {
+    const list = $("#projectList");
+    let draggedItem = null;
+
+    list.querySelectorAll(".project-card").forEach((card) => {
+      card.addEventListener("dragstart", (e) => {
+        draggedItem = card;
+        card.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", card.dataset.id);
+      });
+      card.addEventListener("dragend", () => {
+        card.classList.remove("dragging");
+        draggedItem = null;
+        list.querySelectorAll(".drag-over").forEach((c) => c.classList.remove("drag-over"));
+      });
+      card.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        const target = e.target.closest(".project-card");
+        if (target && target !== draggedItem) {
+          list.querySelectorAll(".drag-over").forEach((c) => c.classList.remove("drag-over"));
+          target.classList.add("drag-over");
+        }
+      });
+      card.addEventListener("dragleave", (e) => {
+        const target = e.target.closest(".project-card");
+        if (target && !target.contains(e.relatedTarget)) {
+          target.classList.remove("drag-over");
+        }
+      });
+      card.addEventListener("drop", async (e) => {
+        e.preventDefault();
+        const target = e.target.closest(".project-card");
+        if (!target || target === draggedItem) return;
+        const fromId = draggedItem.dataset.id;
+        const toId = target.dataset.id;
+        const fromIndex = projects.findIndex((p) => p.id === fromId);
+        const toIndex = projects.findIndex((p) => p.id === toId);
+        if (fromIndex === -1 || toIndex === -1) return;
+
+        // Reorder in local array
+        const [moved] = projects.splice(fromIndex, 1);
+        projects.splice(toIndex, 0, moved);
+
+        // Send new order to server
+        const newOrder = projects.map((p) => p.id);
+        try {
+          await api("/api/admin/projects", { method: "PUT", body: JSON.stringify({ ids: newOrder }) });
+          notify("تم تحديث الترتيب.");
+          loadProjects(true); // Refresh to get updated sortOrder from server
+        } catch (error) {
+          notify(error.message);
+          loadProjects(true); // Revert on error
+        }
+      });
+    });
+  }
 
   $("#leadList").addEventListener("click", (event) => { const row = event.target.closest("[data-lead]"); if (row) openLead(row.dataset.lead); });
   $("#refreshLeads").addEventListener("click", () => Promise.all([loadLeads(), loadProjects()]));

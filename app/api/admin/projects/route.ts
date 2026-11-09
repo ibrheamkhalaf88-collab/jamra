@@ -1,4 +1,4 @@
-import { desc } from "drizzle-orm";
+import { desc, asc, eq } from "drizzle-orm";
 import { getDb } from "../../../../db";
 import { projects } from "../../../../db/schema";
 import { cleanText, jsonError, requireAdmin, safeHttpUrl } from "../../../api/_helpers";
@@ -6,9 +6,9 @@ import { cleanText, jsonError, requireAdmin, safeHttpUrl } from "../../../api/_h
 export async function GET(request: Request) {
   const auth = await requireAdmin(request);
   if ("response" in auth) return auth.response;
-  const rows = await getDb().select().from(projects).orderBy(desc(projects.createdAt)).limit(200);
-  return Response.json({ projects: rows.map(({ coverKey, galleryJson, featuresJson, ...project }) => ({
-    ...project, coverKey, galleryJson, featuresJson,
+  const rows = await getDb().select().from(projects).orderBy(asc(projects.sortOrder), desc(projects.createdAt)).limit(200);
+  return Response.json({ projects: rows.map(({ coverKey, galleryJson, featuresJson, sortOrder, ...project }) => ({
+    ...project, coverKey, galleryJson, featuresJson, sortOrder,
     coverUrl: coverKey ? `/api/media?key=${encodeURIComponent(coverKey)}` : "",
     gallery: parseGallery(galleryJson), features: parseList(featuresJson),
   })) });
@@ -27,6 +27,9 @@ export async function POST(request: Request) {
   const features = cleanList(payload.features);
   const now = new Date().toISOString();
   const id = crypto.randomUUID();
+  // Get max sortOrder for new project
+  const maxOrderResult = await getDb().select({ maxOrder: projects.sortOrder }).from(projects).orderBy(desc(projects.sortOrder)).limit(1);
+  const nextSortOrder = (maxOrderResult[0]?.maxOrder ?? 0) + 1;
   await getDb().insert(projects).values({
     id, title, category,
     summary: cleanText(payload.summary, 240),
@@ -37,6 +40,7 @@ export async function POST(request: Request) {
     galleryJson: JSON.stringify(gallery),
     featuresJson: JSON.stringify(features),
     published: payload.published === false ? 0 : 1,
+    sortOrder: nextSortOrder,
     createdAt: now, updatedAt: now,
   });
   return Response.json({ id }, { status: 201 });
@@ -55,3 +59,17 @@ function cleanList(value: unknown): string[] {
 }
 function parseList(value: string) { try { const parsed = JSON.parse(value); return Array.isArray(parsed) ? parsed.filter((item) => typeof item === "string").slice(0, 12) : []; } catch { return []; } }
 function parseGallery(value: string) { try { const parsed = JSON.parse(value); return Array.isArray(parsed) ? parsed.filter((item) => item && typeof item.key === "string").slice(0, 8).map((item) => ({ key: item.key, url: `/api/media?key=${encodeURIComponent(item.key)}`, alt: String(item.alt || "لقطة من المشروع") })) : []; } catch { return []; } }
+
+// Reorder endpoint
+export async function PUT(request: Request) {
+  const auth = await requireAdmin(request);
+  if ("response" in auth) return auth.response;
+  const payload = await request.json().catch(() => null) as { ids: string[] } | null;
+  if (!payload || !Array.isArray(payload.ids) || payload.ids.length === 0) return jsonError("قائمة IDs غير صالحة.");
+  const now = new Date().toISOString();
+  // Update each project's sortOrder sequentially (D1 doesn't support transactions well)
+  for (let i = 0; i < payload.ids.length; i++) {
+    await getDb().update(projects).set({ sortOrder: i + 1, updatedAt: now }).where(eq(projects.id, payload.ids[i]));
+  }
+  return Response.json({ ok: true });
+}
