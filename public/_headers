@@ -22,6 +22,8 @@
   Content-Type: text/html; charset=utf-8
 /admin-login
   Content-Type: text/html; charset=utf-8
+/women-advocacy
+  Content-Type: text/html; charset=utf-8
 /*.html
   Content-Type: text/html; charset=utf-8
 /*.css
@@ -30,3 +32,7 @@
   Content-Type: text/javascript; charset=utf-8
 /*.json
   Content-Type: application/json; charset=utf-8
+/assets/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+/favicon.svg
+  Cache-Control: public, max-age=604800

@@ -1,4 +1,4 @@
-import { desc, asc, eq } from "drizzle-orm";
+import { desc, asc, eq, sql } from "drizzle-orm";
 import { getDb } from "../../../../db";
 import { projects } from "../../../../db/schema";
 import { cleanText, jsonError, requireAdmin, safeHttpUrl } from "../../../api/_helpers";
@@ -27,9 +27,11 @@ export async function POST(request: Request) {
   const features = cleanList(payload.features);
   const now = new Date().toISOString();
   const id = crypto.randomUUID();
-  // Get max sortOrder for new project
-  const maxOrderResult = await getDb().select({ maxOrder: projects.sortOrder }).from(projects).orderBy(desc(projects.sortOrder)).limit(1);
-  const nextSortOrder = (maxOrderResult[0]?.maxOrder ?? 0) + 1;
+  // New projects go to the end of the list; coalesce keeps this safe when no row has an order yet.
+  const [orderRow] = await getDb()
+    .select({ nextOrder: sql<number>`coalesce(max(${projects.sortOrder}), 0) + 1` })
+    .from(projects);
+  const nextSortOrder = Number(orderRow?.nextOrder) || 1;
   await getDb().insert(projects).values({
     id, title, category,
     summary: cleanText(payload.summary, 240),
@@ -64,12 +66,31 @@ function parseGallery(value: string) { try { const parsed = JSON.parse(value); r
 export async function PUT(request: Request) {
   const auth = await requireAdmin(request);
   if ("response" in auth) return auth.response;
-  const payload = await request.json().catch(() => null) as { ids: string[] } | null;
-  if (!payload || !Array.isArray(payload.ids) || payload.ids.length === 0) return jsonError("قائمة IDs غير صالحة.");
+  const payload = await request.json().catch(() => null) as { ids?: unknown } | null;
+  if (!payload || !Array.isArray(payload.ids)) return jsonError("قائمة IDs غير صالحة.");
+  const ids = payload.ids.filter((item): item is string => typeof item === "string" && item.length > 0 && item.length <= 64);
+  if (ids.length === 0) return jsonError("قائمة IDs غير صالحة.");
+  if (ids.length > 200) return jsonError("عدد المشاريع في الطلب أكبر من المسموح.");
+  if (new Set(ids).size !== ids.length) return jsonError("قائمة المشاريع فيها تكرار.");
+
+  const rows = await getDb()
+    .select({ id: projects.id, sortOrder: projects.sortOrder })
+    .from(projects)
+    .orderBy(asc(projects.sortOrder), desc(projects.createdAt));
+  const known = new Set(rows.map((row) => row.id));
+  if (ids.some((id) => !known.has(id))) return jsonError("في مشاريع غير موجودة في القائمة.", 404);
+
+  // Listed ids come first in the given order, then the rest keep their relative order.
+  // Renumbering every row keeps sort_order unique even when the client sends a partial list.
+  const ordered = [...ids, ...rows.filter((row) => !ids.includes(row.id)).map((row) => row.id)];
+  const current = new Map(rows.map((row) => [row.id, row.sortOrder]));
   const now = new Date().toISOString();
-  // Update each project's sortOrder sequentially (D1 doesn't support transactions well)
-  for (let i = 0; i < payload.ids.length; i++) {
-    await getDb().update(projects).set({ sortOrder: i + 1, updatedAt: now }).where(eq(projects.id, payload.ids[i]));
+  // D1 returns HTTP 500 on multi-statement transactions here, so update the changed rows only.
+  for (let index = 0; index < ordered.length; index++) {
+    const id = ordered[index];
+    const nextOrder = index + 1;
+    if (current.get(id) === nextOrder) continue;
+    await getDb().update(projects).set({ sortOrder: nextOrder, updatedAt: now }).where(eq(projects.id, id));
   }
-  return Response.json({ ok: true });
+  return Response.json({ ok: true, count: ordered.length });
 }
