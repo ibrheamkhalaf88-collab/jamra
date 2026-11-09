@@ -75,20 +75,36 @@
   async function importCatalogProject(catalogItem) {
     try {
       notify("جاري استيراد المشروع...");
+      let coverKey = "";
+      if (catalogItem.imageUrl) {
+        try {
+          const response = await fetch(catalogItem.imageUrl, { cache: "no-store" });
+          const type = (response.headers.get("content-type") || "").split(";")[0].trim();
+          if (response.ok && type.startsWith("image/")) {
+            const blob = await response.blob();
+            const name = (catalogItem.imageUrl.split("/").pop() || "cover").split("?")[0] || "cover";
+            const upload = new FormData();
+            upload.set("file", new File([blob], name, { type }));
+            const uploaded = await api("/api/admin/upload", { method: "POST", body: upload });
+            if (uploaded.key) coverKey = uploaded.key;
+          }
+        } catch { coverKey = ""; }
+      }
       const payload = {
         title: catalogItem.title,
         category: catalogItem.category,
         summary: catalogItem.summary,
-        description: catalogItem.summary, // Use summary as description for now
+        description: catalogItem.summary,
         projectUrl: catalogItem.projectUrl,
         videoUrl: catalogItem.videoUrl,
+        coverKey,
         published: true
       };
       const response = await api("/api/admin/projects", { method: "POST", body: JSON.stringify(payload) });
       if (response.id) {
-        // If there's an imageUrl, we'd need to download and upload it to R2
-        // For now, just notify and refresh
-        notify(`تم استيراد "${catalogItem.title}" بنجاح! تقدر تعدل عليه وتضيف غلاف من التبويب "المشاريع".`);
+        notify(coverKey
+          ? `تم استيراد "${catalogItem.title}" بنجاح مع غلافه. تقدر تعدّل عليه وقتما تشاء.`
+          : `تم استيراد "${catalogItem.title}" بنجاح! تقدر تعدل عليه وتضيف غلاف من التبويب "المشاريع".`);
         await loadProjects(true);
       }
     } catch (error) {

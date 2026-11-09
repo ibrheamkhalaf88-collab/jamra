@@ -8,9 +8,12 @@ export async function POST(request: Request) {
   }
   const origin = request.headers.get("origin");
   if (origin && new URL(origin).origin !== new URL(request.url).origin) return jsonError("الطلب غير مسموح.", 403);
-  const address = request.headers.get("cf-connecting-ip") ?? "";
-  if (!address) return jsonError("تعذّر التحقق من الاتصال.", 503);
-  const ipDigest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${env.JAMRA_SESSION_SECRET}:${address}`));
+  const host = request.headers.get("host") ?? "";
+  const isLocalHost = /^(127\.0\.0\.1|localhost)(:\d+)?$/i.test(host);
+  const address = request.headers.get("cf-connecting-ip")?.trim() || "";
+  if (!address && !isLocalHost) return jsonError("تعذّر التحقق من الاتصال.", 503);
+  const ipForHash = address || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
+  const ipDigest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${env.JAMRA_SESSION_SECRET}:${ipForHash}`));
   const ipHash = [...new Uint8Array(ipDigest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
   const now = Math.floor(Date.now() / 1000);
   const cutoff = now - 15 * 60;
